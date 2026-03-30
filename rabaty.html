@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rabaty – Simply</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1f2937;font-size:13px}
+
+/* HEADER */
+header{background:#1a3a5c;color:#fff;height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 2px 6px rgba(0,0,0,.25);position:sticky;top:0;z-index:50}
+header h1{font-size:1rem;letter-spacing:.3px}
+.hdr-right{display:flex;gap:8px;align-items:center}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:8px;align-items:center;padding:10px 16px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:50px;z-index:40;flex-wrap:wrap}
+.search-box{border:1px solid #d1d5db;border-radius:7px;padding:5px 10px;font-size:.82rem;width:220px;font-family:inherit}
+.search-box:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 2px #bfdbfe}
+.filter-group{display:flex;gap:4px}
+.filter-btn{padding:5px 12px;border:1px solid #d1d5db;border-radius:7px;background:#fff;cursor:pointer;font-size:.78rem;font-weight:600;color:#6b7280;transition:all .15s}
+.filter-btn.active{background:#1a3a5c;color:#fff;border-color:#1a3a5c}
+.toolbar-right{margin-left:auto;display:flex;gap:6px}
+
+/* TABULKA */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead{position:sticky;top:98px;z-index:30;background:#1a3a5c;color:#fff}
+thead th{padding:8px 10px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;border-right:1px solid rgba(255,255,255,.12)}
+thead th:last-child{border-right:none}
+thead th.col-dot{width:28px;text-align:center}
+thead th.col-akce{width:130px}
+thead th.col-num{width:80px;text-align:center}
+thead th.col-numw{width:100px;text-align:center}
+thead th.col-acts{width:60px;text-align:center}
+
+tbody tr.prod-row{border-bottom:1px solid #e5e7eb;transition:background .1s;cursor:pointer}
+tbody tr.prod-row:hover{background:#f0f6ff}
+tbody tr.prod-row.expanded{background:#eff6ff;font-weight:600}
+tbody tr.prod-row.done-row{opacity:.5}
+tbody tr.detail-row td{padding:0;background:#f8fafc;border-bottom:2px solid #dbeafe}
+
+td{padding:6px 10px;vertical-align:middle}
+td.td-dot{text-align:center;padding:6px 4px}
+td.td-num{text-align:center}
+td.td-acts{text-align:center}
+td.td-name{font-weight:600;max-width:220px}
+td.td-akce{color:#4b5563;max-width:130px;font-size:.8rem}
+
+/* STATUS DOTS */
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-gray{background:#d1d5db}
+.dot-yellow{background:#f59e0b}
+.dot-orange{background:#f97316}
+.dot-green{background:#22c55e}
+.dot-red{background:#ef4444}
+.dot-blue{background:#3b82f6}
+
+/* DETAIL PANEL */
+.detail-panel{padding:14px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.detail-panel{grid-template-columns:1fr}}
+
+.dp-section{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px}
+.dp-section.full{grid-column:1/-1}
+.dp-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6b7280;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.dp-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dp-field label{display:block;font-size:.72rem;font-weight:600;color:#374151;margin-bottom:3px}
+.dp-field input,.dp-field textarea{width:100%;border:1px solid #d1d5db;border-radius:6px;padding:5px 8px;font-size:.82rem;font-family:inherit}
+.dp-field input:focus,.dp-field textarea:focus{outline:none;border-color:#2563eb}
+
+/* TIMESTAMPED ENTRIES */
+.entry-list{list-style:none;margin-bottom:6px}
+.entry-list li{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px dashed #f3f4f6;font-size:.82rem}
+.entry-list li:last-child{border:none}
+.e-date{color:#6b7280;font-size:.76rem;min-width:120px;flex-shrink:0}
+.e-qty{font-weight:700;color:#1d4ed8;min-width:50px}
+.e-note{color:#4b5563;flex:1;font-size:.78rem}
+.e-del{margin-left:auto;background:none;border:none;color:#d1d5db;cursor:pointer;padding:1px 4px;border-radius:3px;font-size:.9rem;line-height:1}
+.e-del:hover{color:#ef4444;background:#fee2e2}
+
+.add-entry-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:4px}
+.add-entry-row input[type="datetime-local"]{border:1px solid #d1d5db;border-radius:5px;padding:4px 7px;font-size:.76rem;font-family:inherit}
+.add-entry-row input[type="number"],.add-entry-row input[type="text"]{border:1px solid #d1d5db;border-radius:5px;padding:4px 7px;font-size:.76rem;font-family:inherit;width:80px}
+.add-entry-row input[type="text"].note-input{width:120px}
+.add-entry-row input:focus{outline:none;border-color:#2563eb}
+
+.dp-actions{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end;padding-top:4px}
+
+/* TLAČÍTKA */
+.btn{padding:5px 13px;border-radius:6px;border:none;cursor:pointer;font-size:.78rem;font-weight:600;transition:all .15s;display:inline-flex;align-items:center;gap:4px;font-family:inherit}
+.btn-primary{background:#2563eb;color:#fff}.btn-primary:hover{background:#1d4ed8}
+.btn-success{background:#16a34a;color:#fff}.btn-success:hover{background:#15803d}
+.btn-danger{background:#ef4444;color:#fff}.btn-danger:hover{background:#dc2626}
+.btn-ghost{background:#f3f4f6;color:#374151;border:1px solid #d1d5db}.btn-ghost:hover{background:#e5e7eb}
+.btn-warn{background:#f59e0b;color:#fff}.btn-warn:hover{background:#d97706}
+.btn-xs{padding:3px 8px;font-size:.72rem}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:10px;padding:22px;width:380px;max-width:calc(100vw - 24px);box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.modal h2{font-size:.95rem;margin-bottom:14px}
+.form-group{margin-bottom:10px}
+.form-group label{display:block;font-size:.75rem;font-weight:700;color:#374151;margin-bottom:3px}
+.form-group input{width:100%;border:1px solid #d1d5db;border-radius:6px;padding:6px 9px;font-size:.85rem;font-family:inherit}
+.form-group input:focus{outline:none;border-color:#2563eb}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+
+/* VARIOUS */
+.badge-count{font-size:.72rem;color:#6b7280;font-weight:400}
+.empty-table{padding:40px;text-align:center;color:#9ca3af}
+.chevron-cell{color:#9ca3af;font-size:.75rem}
+.summary-info{font-size:.75rem;color:#6b7280;padding:2px 0}
+.total-bar{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px solid #f3f4f6}
+.total-item{font-size:.78rem}.total-item .t-label{color:#6b7280}.total-item .t-val{font-weight:700;color:#1d4ed8}
+.t-ok{color:#16a34a!important}.t-warn{color:#d97706!important}.t-bad{color:#dc2626!important}
+.dealer-badge{background:#dbeafe;color:#1d4ed8;padding:2px 9px;border-radius:10px;font-size:.75rem;font-weight:700}
+
+/* DEALER SELECTION SCREEN */
+#dealerScreen{padding:48px 16px;display:none}
+.ds-title{text-align:center;font-size:1.5rem;font-weight:700;color:#1a3a5c;margin-bottom:6px}
+.ds-sub{text-align:center;color:#6b7280;font-size:.9rem;margin-bottom:36px}
+.dealer-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px;max-width:900px;margin:0 auto}
+.dealer-card{background:#fff;border:2px solid #e5e7eb;border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;transition:all .2s}
+.dealer-card:hover{border-color:#2563eb;background:#eff6ff;transform:translateY(-3px);box-shadow:0 6px 18px rgba(37,99,235,.15)}
+.dc-name{font-size:1.05rem;font-weight:700;color:#1f2937;margin-bottom:6px}
+.dc-count{font-size:.78rem;color:#6b7280}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📦 Přehled rabatů
+    <span id="dealerBadge" class="dealer-badge" style="margin-left:10px"></span>
+  </h1>
+  <div class="hdr-right">
+    <button class="btn btn-ghost btn-xs" id="btnBack" style="display:none" onclick="showDealerScreen()">← Dealeři</button>
+    <button class="btn btn-ghost btn-xs" onclick="openDealerMgr()">⚙ Dealeři</button>
+    <button class="btn btn-ghost btn-xs" id="btnExport" style="display:none" onclick="exportJSON()">⬇ JSON</button>
+    <button class="btn btn-primary btn-xs" id="btnAddProduct" style="display:none" onclick="openAddProduct()">+ Produkt</button>
+  </div>
+</header>
+
+<!-- OBRAZOVKA VÝBĚRU DEALERA -->
+<div id="dealerScreen">
+  <div class="ds-title">Vyberte dealera</div>
+  <div class="ds-sub">Klikněte na dealera pro zobrazení přehledu jeho rabatů</div>
+  <div class="dealer-cards" id="dealerCards"></div>
+</div>
+
+<!-- TABULKA PRODUKTŮ -->
+<div id="tableView" style="display:none">
+<div class="toolbar">
+  <input class="search-box" type="search" id="searchInput" placeholder="🔍 Hledat produkt…" oninput="renderTable()">
+  <div class="filter-group">
+    <button class="filter-btn active" data-f="all"      onclick="setFilter(this)">Vše</button>
+    <button class="filter-btn"        data-f="active"   onclick="setFilter(this)">Aktivní</button>
+    <button class="filter-btn"        data-f="pending"  onclick="setFilter(this)">Čeká rabat</button>
+    <button class="filter-btn"        data-f="done"     onclick="setFilter(this)">Vyřízeno</button>
+  </div>
+  <div class="toolbar-right">
+    <span id="countInfo" class="badge-count"></span>
+    <button class="btn btn-success btn-xs" onclick="openDealerSelector()">Dealer: <span id="activeDealerName">—</span></button>
+  </div>
+</div>
+
+<div class="table-wrap" id="tableWrap">
+<table id="mainTable">
+  <thead>
+    <tr>
+      <th class="col-dot">•</th>
+      <th>Produkt</th>
+      <th class="col-akce">AKCE</th>
+      <th class="col-num">Objednal</th>
+      <th class="col-numw">Dodáno</th>
+      <th class="col-num">Bonus sl.</th>
+      <th class="col-num">Bonus dod.</th>
+      <th class="col-num">Admin</th>
+      <th class="col-acts"></th>
+    </tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+</div>
+</div><!-- /tableView -->
+
+<!-- MODAL: správa dealerů -->
+<div class="overlay" id="modalDealers">
+  <div class="modal">
+    <h2>Dealeři</h2>
+    <div id="dealerList" style="margin-bottom:12px;max-height:200px;overflow-y:auto"></div>
+    <div class="form-group">
+      <label>Název nového dealera</label>
+      <input type="text" id="newDealerName" placeholder="např. BioFarm…">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalDealers')">Zavřít</button>
+      <button class="btn btn-primary" onclick="addDealer()">Přidat dealera</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: výběr dealera -->
+<div class="overlay" id="modalSelectDealer">
+  <div class="modal">
+    <h2>Vybrat dealera</h2>
+    <div id="dealerSelectList" style="margin-bottom:12px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalSelectDealer')">Zrušit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: nový produkt -->
+<div class="overlay" id="modalProduct">
+  <div class="modal">
+    <h2>Nový produkt</h2>
+    <div class="form-group"><label>Název produktu</label><input type="text" id="npName" placeholder="např. Hlíva 150+60"></div>
+    <div class="form-group"><label>AKCE (podmínky)</label><input type="text" id="npAkce" placeholder="např. 6+1"></div>
+    <div class="form-group"><label>Objednal (ks)</label><input type="text" id="npOb" placeholder="např. 50+15"></div>
+    <div class="form-group"><label>Bonus slíbený</label><input type="text" id="npBsl" placeholder="např. 15"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalProduct')">Zrušit</button>
+      <button class="btn btn-primary" onclick="saveNewProduct()">Přidat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── POČÁTEČNÍ DATA (Simply) ───────────────────────────────────────────────────
+const SIMPLY_ID = 'simply-001';
+
+const INIT_PRODUCTS = [
+  {n:'5prevemax',a:'5+1'},
+  {n:'alergohelp',a:''},
+  {n:'atopos kura',a:'5+1'},
+  {n:'atopos krém',a:'',ob:'5',dod:'10',bsl:'1',bdod:'',badm:'2?'},
+  {n:'atopohelp',a:'5+1'},
+  {n:'aurisclean kapky',a:''},
+  {n:'aurisclean sprej',a:''},
+  {n:'AurisClean Sensitive',a:''},
+  {n:'B17',a:'',ob:'100',dod:'100',bsl:'30',bdod:'',badm:'30'},
+  {n:'bigbao',a:'40+12'},
+  {n:'canezin spray',a:''},
+  {n:'canadent 10x 1,5',a:'3+1'},
+  {n:'cannadent herpex',a:''},
+  {n:'mycosin krém proti plísním',a:'10+4',ob:'30',dod:'30',bsl:'10',bdod:'10',badm:'10'},
+  {n:'mycosin sérum',a:'',ob:'30',dod:'30',bsl:'10',bdod:'10',badm:'10'},
+  {n:'canadent lipstick',a:'3+1'},
+  {n:'cannaderm aknea voda',a:''},
+  {n:'Cannaderm Aknea ošetřující sérum 5ml',a:'4+1',ob:'10',dod:'10',bsl:'3',bdod:'5',badm:'3'},
+  {n:'cannaderm aknea krém',a:'6+2'},
+  {n:'cannaderm aknea pěna',a:''},
+  {n:'canaderm capillus seborea CBD',a:'',ob:'3',dod:'',bsl:'1',bdod:'',badm:''},
+  {n:'canaderm capillus seborea',a:''},
+  {n:'canaderm ekzema',a:'5+1'},
+  {n:'canaderm regenerace',a:'5+1',ob:'10+20',dod:'10+20',bsl:'3+6',bdod:'2',badm:'3+6'},
+  {n:'Canaderm robátko zvláčňující krém',a:''},
+  {n:'robátko emoliens',a:''},
+  {n:'cannadent zubní pasta',a:''},
+  {n:'cholestmizin forte 30',a:''},
+  {n:'cholestmizin forte 100',a:'5+1, 18+4, 100+25'},
+  {n:'cordyshen 4+1',a:'4+1'},
+  {n:'cordyshen 9+4',a:'9+4'},
+  {n:'coenzym extra strong',a:'30+12'},
+  {n:'coenzym max 30+15 tob',a:''},
+  {n:'coenzym classic',a:'',ob:'',dod:'',bsl:'5 (špatná expirace)',bdod:'',badm:''},
+  {n:'curcurin',a:'9+5, 15+5'},
+  {n:'decolen',a:'3+1'},
+  {n:'dentacoll',a:''},
+  {n:'dentohelp',a:''},
+  {n:'elasti q exclusive',a:'7+1'},
+  {n:'elasti q kys. lis. 180',a:''},
+  {n:'elasti q original',a:'8+1'},
+  {n:'elasti q vitaminy 90',a:''},
+  {n:'enzycol DNA',a:'25+5, 70+15+14'},
+  {n:'folixil',a:'3+1, 4+1, 15+5, 20+6'},
+  {n:'Ginkgo Max + Bacopa 120',a:''},
+  {n:'he-panol 60',a:'7+1'},
+  {n:'he-panol 50+20',a:'50+20'},
+  {n:'hemox gel',a:'7+1 / 20+4',ob:'20',dod:'20',bsl:'6',bdod:'6',badm:'6'},
+  {n:'hemostop 60+30',a:'',ob:'42',dod:'42',bsl:'7',bdod:'8',badm:'8'},
+  {n:'hemostop gel',a:'',ob:'10',dod:'10',bsl:'1',bdod:'',badm:'1'},
+  {n:'thermolka (balení)',a:'15+3,5'},
+  {n:'hlíva 150+60',a:'6+1'},
+  {n:'hypetenzin 60',a:'5+1, 27+6, 15+3'},
+  {n:'hypetenzin 120',a:'50+10',ob:'',dod:'10',bsl:'',bdod:'',badm:''},
+  {n:'imunit akut',a:'3+1'},
+  {n:'intime',a:'3+1, 40+10'},
+  {n:'Jack Hlívák (malý)',a:'10+3'},
+  {n:'Jack Hlívák 60 tbl + tabulka',a:'7+1'},
+  {n:'Jack Hlívák 60 tbl + vystřihovánka',a:'7+1'},
+  {n:'Jack laktobacilak + magnetka',a:'3+1'},
+  {n:'Jack sirup',a:''},
+  {n:'karpalex CBD',a:'',ob:'',dod:'',bsl:'',bdod:'2',badm:''},
+  {n:'Konopka',a:'20+6, 4+1, 5+1'},
+  {n:'L-tryptofan',a:'15+3, 50+10',ob:'100',dod:'100',bsl:'25',bdod:'',badm:'25'},
+  {n:'L-tryptofan forte',a:''},
+  {n:'laktobacily imunit 60+12',a:'6+2'},
+  {n:'lactobacily forte',a:''},
+  {n:'liquido duo forte',a:'5+1'},
+  {n:'liquido radical',a:'5+1'},
+  {n:'mentholka 250',a:'10+1'},
+  {n:'mentholka chladivá náplast',a:''},
+  {n:'mentholka extra',a:'15+3,5'},
+  {n:'mentholka AKUT',a:''},
+  {n:'magnesium Dead Sea 140',a:''},
+  {n:'naranyl gel',a:''},
+  {n:'naranyl sprej',a:''},
+  {n:'neuroregen',a:'5+1, 27+6, 10+2'},
+  {n:'ocutein sensigel',a:''},
+  {n:'ocutein briliant 90+30',a:'',ob:'21',dod:'21',bsl:'4',bdod:'',badm:'4'},
+  {n:'Ocutein brilant 60+kapky',a:'',ob:'',dod:'',bsl:'',bdod:'2',badm:''},
+  {n:'ocutein ginkgo',a:'',ob:'21',dod:'21',bsl:'4',bdod:'',badm:'4'},
+  {n:'ocutein sensitive',a:'',ob:'16',dod:'',bsl:'2 AH + 2 jinak',bdod:'',badm:''},
+  {n:'ocutein care',a:'',ob:'16',dod:'',bsl:'2 AH + 2 jinak',bdod:'',badm:''},
+  {n:'ocutein allergo',a:'',ob:'16',dod:'',bsl:'2 AH + 2 jinak',bdod:'',badm:''},
+  {n:'ocutein medical gelové oční kapky',a:'',ob:'16',dod:'',bsl:'2 AH + 2 jinak',bdod:'',badm:''},
+  {n:'Ocutein forte',a:'',ob:'21',dod:'21',bsl:'4',bdod:'',badm:'4'},
+  {n:'Ortopeden',a:'5+1, 60+20, 80+20'},
+  {n:'Pargavit C mix děti',a:'7+1'},
+  {n:'Pargavit mod',a:'5+1'},
+  {n:'pargavit origan',a:'10+2'},
+  {n:'Pargavit žlutý',a:'60+15, 10+1',ob:'',dod:'',bsl:'',bdod:'4',badm:''},
+  {n:'planthe antipigmentové sérum',a:''},
+  {n:'planthe hyaluronové',a:''},
+  {n:'planthe na rty',a:'10+7'},
+  {n:'planthe arganový',a:'20+4'},
+  {n:'planthe meruňka',a:''},
+  {n:'planthe oční',a:'5+1, 20+6'},
+  {n:'planthe kolagenové',a:'20+4',ob:'4',dod:'4',bsl:'1',bdod:'',badm:'1'},
+  {n:'Pletové hnojivo',a:'20+5'},
+  {n:'regemask',a:'5+1'},
+  {n:'reishia',a:'6+2'},
+  {n:'řasové hnojivo',a:'7+1',ob:'',dod:'',bsl:'1 – reklamace 331859',bdod:'',badm:''},
+  {n:'senzycol',a:'21+4'},
+  {n:'sladia 100',a:''},
+  {n:'sladia 600+100',a:'30+15, 50+15'},
+  {n:'slimax forte',a:'10+2'},
+  {n:'slimax lady',a:'10+2'},
+  {n:'silymarin duo',a:''},
+  {n:'silymarin lipo',a:''},
+  {n:'thermolka 250',a:'15+3,5',ob:'',dod:'',bsl:'',bdod:'10',badm:''},
+  {n:'thermolka extra',a:'10+1'},
+  {n:'thermolka náplast 3ks',a:''},
+  {n:'thermolka AKUT',a:''},
+  {n:'tree3chlorella',a:''},
+  {n:'unilakt classic 600',a:'12+3, 24+8'},
+  {n:'unilakt čoko 600',a:'9+2'},
+  {n:'unilakt skořice 850 tbl',a:'6+1',ob:'10',dod:'10',bsl:'3',bdod:'4',badm:'3'},
+  {n:'unilakt sypký',a:'3+1'},
+  {n:'venosil gel',a:'30+8, 21+4, 7+1, 35+5'},
+  {n:'venosil sprej',a:'',ob:'',dod:'',bsl:'',bdod:'5',badm:''},
+  {n:'Vitamin C 1200 mg URGENT + 60',a:'5+1'},
+  {n:'Vitamin C 1200 mg URGENT + 120',a:'5+1'},
+  {n:'vlasové hnojivo 150+60',a:''},
+  {n:'vlasové 150',a:'60+25'},
+  {n:'vlasové hn. 60',a:'60+25'},
+  {n:'vlasové hnojivo šampon',a:'7+1',ob:'42',dod:'42',bsl:'10',bdod:'',badm:'10'},
+  {n:'vlasové hnojivo sérum',a:'7+1',ob:'21+42',dod:'21+42',bsl:'5+10',bdod:'10',badm:'5+10'},
+  {n:'zlatěnka',a:'3+1, 200+60',ob:'210',dod:'200',bsl:'70',bdod:'20',badm:'70'},
+];
+
+// ── STORAGE ───────────────────────────────────────────────────────────────────
+function load() {
+  return {
+    dealers:  JSON.parse(localStorage.getItem('rb3_dealers')  || 'null') || [],
+    products: JSON.parse(localStorage.getItem('rb3_products') || 'null') || [],
+  };
+}
+function save(data) {
+  localStorage.setItem('rb3_dealers',  JSON.stringify(data.dealers));
+  localStorage.setItem('rb3_products', JSON.stringify(data.products));
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+// ── INICIALIZACE DAT ──────────────────────────────────────────────────────────
+(function init() {
+  if (localStorage.getItem('rb3_init')) return;
+  const data = { dealers: [], products: [] };
+  data.dealers.push({ id: SIMPLY_ID, name: 'Simply' });
+  INIT_PRODUCTS.forEach(p => {
+    const hasData = p.ob || p.dod || p.bsl || p.bdod || p.badm;
+    data.products.push({
+      id: uid(),
+      dealerId: SIMPLY_ID,
+      name: p.n,
+      akce: p.a || '',
+      objednano: p.ob || '',
+      bonusSlibeny: p.bsl || '',
+      bonusAdmin: p.badm || '',
+      notes: '',
+      dodavky: p.dod ? [{ id: uid(), date: null, qty: null, note: p.dod, imported: true }] : [],
+      bonusyPrijate: p.bdod ? [{ id: uid(), date: null, qty: null, note: p.bdod, imported: true }] : [],
+      done: false,
+    });
+  });
+  save(data);
+  localStorage.setItem('rb3_init', '1');
+})();
+
+// ── STAV ──────────────────────────────────────────────────────────────────────
+let activeDealerId = null;
+let activeFilter = 'all';
+let expandedId = null;
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function nowLocal() {
+  const d = new Date(); d.setSeconds(0,0);
+  return d.toISOString().slice(0,16);
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('cs-CZ',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function sumEntries(entries) {
+  const nums = entries.filter(e => e.qty !== null && !isNaN(Number(e.qty)));
+  if (!nums.length) return null;
+  return nums.reduce((s, e) => s + Number(e.qty), 0);
+}
+function displayEntries(entries) {
+  if (!entries.length) return '—';
+  const s = sumEntries(entries);
+  const notes = entries.filter(e => e.note && !e.qty).map(e => e.note);
+  if (s !== null) return s + (notes.length ? ' + ' + notes.join(', ') : '');
+  return entries.map(e => e.note || e.qty).join(', ');
+}
+
+// ── STATUS ────────────────────────────────────────────────────────────────────
+function getStatus(p) {
+  if (p.done) return 'done';
+  const hasAny = p.objednano || p.dodavky.length || p.bonusSlibeny || p.bonusyPrijate.length || p.bonusAdmin;
+  if (!hasAny) return 'empty';
+  const dodTot = sumEntries(p.dodavky);
+  const bonTot = sumEntries(p.bonusyPrijate);
+  const bsl = parseFloat(p.bonusSlibeny);
+  const badm = parseFloat(p.bonusAdmin);
+  // waiting for bonus to arrive
+  if (p.bonusSlibeny && !isNaN(bsl) && (bonTot === null || bonTot < bsl)) return 'pending-bonus';
+  // has bonus received but not in admin
+  if (bonTot !== null && !p.bonusAdmin) return 'pending-admin';
+  return 'active';
+}
+const STATUS_DOT = {
+  empty: 'dot-gray',
+  active: 'dot-green',
+  'pending-bonus': 'dot-orange',
+  'pending-admin': 'dot-blue',
+  done: 'dot-green',
+};
+const STATUS_LABEL = {
+  empty: 'Bez dat',
+  active: 'Vyřízeno / OK',
+  'pending-bonus': 'Čeká na bonus',
+  'pending-admin': 'Bonus neadmin.',
+  done: 'Archivováno',
+};
+
+// ── FILTER / SEARCH ───────────────────────────────────────────────────────────
+function setFilter(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = btn.dataset.f;
+  renderTable();
+}
+function matchFilter(p) {
+  const st = getStatus(p);
+  if (activeFilter === 'all')     return true;
+  if (activeFilter === 'active')  return st !== 'empty' && !p.done;
+  if (activeFilter === 'pending') return st === 'pending-bonus' || st === 'pending-admin';
+  if (activeFilter === 'done')    return p.done;
+  return true;
+}
+function matchSearch(p, q) {
+  if (!q) return true;
+  return p.name.toLowerCase().includes(q.toLowerCase()) || (p.akce||'').toLowerCase().includes(q.toLowerCase());
+}
+
+// ── RENDER TABLE ──────────────────────────────────────────────────────────────
+function renderTable() {
+  const data = load();
+  const q = document.getElementById('searchInput').value;
+  const products = data.products.filter(p => p.dealerId === activeDealerId && matchFilter(p) && matchSearch(p, q));
+
+  // dealer badge
+  const dealer = data.dealers.find(d => d.id === activeDealerId);
+  document.getElementById('activeDealerName').textContent = dealer ? dealer.name : '—';
+  document.getElementById('dealerBadge').textContent = dealer ? dealer.name : '';
+  document.getElementById('countInfo').textContent = `Zobrazeno: ${products.length} z ${data.products.filter(p=>p.dealerId===activeDealerId).length}`;
+
+  const tbody = document.getElementById('tableBody');
+  if (!products.length) {
+    tbody.innerHTML = `<tr><td colspan="9" class="empty-table">Žádné záznamy</td></tr>`;
+    return;
+  }
+
+  let html = '';
+  products.forEach(p => {
+    const st = getStatus(p);
+    const dotCls = STATUS_DOT[st] || 'dot-gray';
+    const dodDisplay = p.dodavky.length ? displayEntries(p.dodavky) : (p.dodavky.length===0 && !p.objednano ? '—' : (displayEntries(p.dodavky) || '—'));
+    const dodTxt = displayEntries(p.dodavky) || '—';
+    const bonTxt = displayEntries(p.bonusyPrijate) || (p.bonusyPrijate.length ? displayEntries(p.bonusyPrijate) : '—');
+    const isExp = expandedId === p.id;
+
+    html += `<tr class="prod-row${p.done?' done-row':''}${isExp?' expanded':''}" onclick="toggleExpand('${p.id}')" id="row-${p.id}">
+      <td class="td-dot"><span class="dot ${dotCls}" title="${STATUS_LABEL[st]}"></span></td>
+      <td class="td-name">${esc(p.name)}</td>
+      <td class="td-akce">${esc(p.akce||'—')}</td>
+      <td class="td-num">${esc(p.objednano||'—')}</td>
+      <td class="td-num">${esc(dodTxt)}</td>
+      <td class="td-num">${esc(p.bonusSlibeny||'—')}</td>
+      <td class="td-num">${esc(bonTxt)}</td>
+      <td class="td-num">${esc(p.bonusAdmin||'—')}</td>
+      <td class="td-acts chevron-cell">${isExp?'▼':'▶'}</td>
+    </tr>`;
+
+    if (isExp) {
+      html += `<tr class="detail-row" id="detail-${p.id}"><td colspan="9">${renderDetailPanel(p)}</td></tr>`;
+    }
+  });
+  tbody.innerHTML = html;
+}
+
+// ── DETAIL PANEL ──────────────────────────────────────────────────────────────
+function renderDetailPanel(p) {
+  const dodSum = sumEntries(p.dodavky);
+  const bonSum = sumEntries(p.bonusyPrijate);
+  const bsl = parseFloat(p.bonusSlibeny);
+  const dodCls = (dodSum !== null && p.objednano && !isNaN(parseFloat(p.objednano)) && dodSum >= parseFloat(p.objednano)) ? 't-ok' : '';
+  const bonCls = (!isNaN(bsl) && bonSum !== null) ? (bonSum >= bsl ? 't-ok' : 't-warn') : '';
+
+  const dodEntries = p.dodavky.map((e,i) => `
+    <li>
+      <span class="e-date">${e.imported ? '(import)' : fmtDate(e.date)}</span>
+      <span class="e-qty">${e.qty !== null ? e.qty+' ks' : ''}</span>
+      <span class="e-note">${esc(e.note||'')}</span>
+      <button class="e-del" onclick="delEntry(event,'${p.id}','dod',${i})" title="Smazat">✕</button>
+    </li>`).join('');
+
+  const bonEntries = p.bonusyPrijate.map((e,i) => `
+    <li>
+      <span class="e-date">${e.imported ? '(import)' : fmtDate(e.date)}</span>
+      <span class="e-qty">${e.qty !== null ? e.qty : ''}</span>
+      <span class="e-note">${esc(e.note||'')}</span>
+      <button class="e-del" onclick="delEntry(event,'${p.id}','bon',${i})" title="Smazat">✕</button>
+    </li>`).join('');
+
+  return `<div class="detail-panel">
+
+    <!-- ZÁKLADNÍ POLE -->
+    <div class="dp-section">
+      <div class="dp-title">Základní údaje</div>
+      <div class="dp-fields">
+        <div class="dp-field" style="grid-column:1/-1">
+          <label>Název produktu</label>
+          <input type="text" value="${esc(p.name)}" onchange="updateField('${p.id}','name',this.value)">
+        </div>
+        <div class="dp-field" style="grid-column:1/-1">
+          <label>AKCE (podmínky)</label>
+          <input type="text" value="${esc(p.akce||'')}" onchange="updateField('${p.id}','akce',this.value)" placeholder="např. 10+3">
+        </div>
+        <div class="dp-field">
+          <label>Objednal (ks)</label>
+          <input type="text" value="${esc(p.objednano||'')}" onchange="updateField('${p.id}','objednano',this.value)" placeholder="např. 50+15">
+        </div>
+        <div class="dp-field">
+          <label>Bonus slíbený</label>
+          <input type="text" value="${esc(p.bonusSlibeny||'')}" onchange="updateField('${p.id}','bonusSlibeny',this.value)" placeholder="např. 15">
+        </div>
+        <div class="dp-field">
+          <label>Bonus admin</label>
+          <input type="text" value="${esc(p.bonusAdmin||'')}" onchange="updateField('${p.id}','bonusAdmin',this.value)">
+        </div>
+        <div class="dp-field">
+          <label>Poznámky</label>
+          <input type="text" value="${esc(p.notes||'')}" onchange="updateField('${p.id}','notes',this.value)">
+        </div>
+      </div>
+      <div class="total-bar">
+        <div class="total-item"><span class="t-label">Dodáno celkem: </span><span class="t-val ${dodCls}">${dodSum !== null ? dodSum+' ks' : '—'}</span></div>
+        <div class="total-item"><span class="t-label">Bonus přijat: </span><span class="t-val ${bonCls}">${bonSum !== null ? bonSum : '—'}${!isNaN(bsl)?' / sl. '+bsl:''}</span></div>
+      </div>
+    </div>
+
+    <!-- DODÁVKY -->
+    <div class="dp-section">
+      <div class="dp-title">📦 Simply dodalo <span style="font-weight:400;color:#6b7280">(${p.dodavky.length} zázn.)</span></div>
+      <ul class="entry-list">${dodEntries || '<li style="color:#9ca3af;font-size:.78rem;padding:4px 0">Zatím žádný záznam</li>'}</ul>
+      <div class="add-entry-row">
+        <input type="datetime-local" id="dDate-${p.id}" value="${nowLocal()}">
+        <input type="number" id="dQty-${p.id}" placeholder="ks" min="1">
+        <input type="text" class="note-input" id="dNote-${p.id}" placeholder="poznámka">
+        <button class="btn btn-ghost btn-xs" onclick="addEntry(event,'${p.id}','dod')">+ Přidat</button>
+      </div>
+    </div>
+
+    <!-- BONUSY -->
+    <div class="dp-section">
+      <div class="dp-title">🎁 Bonus přijatý <span style="font-weight:400;color:#6b7280">(${p.bonusyPrijate.length} zázn.)</span></div>
+      <ul class="entry-list">${bonEntries || '<li style="color:#9ca3af;font-size:.78rem;padding:4px 0">Zatím žádný záznam</li>'}</ul>
+      <div class="add-entry-row">
+        <input type="datetime-local" id="bDate-${p.id}" value="${nowLocal()}">
+        <input type="number" id="bQty-${p.id}" placeholder="množství" min="1">
+        <input type="text" class="note-input" id="bNote-${p.id}" placeholder="poznámka">
+        <button class="btn btn-ghost btn-xs" onclick="addEntry(event,'${p.id}','bon')">+ Přidat</button>
+      </div>
+    </div>
+
+    <!-- AKCE -->
+    <div class="dp-section full" style="background:transparent;border:none;padding:0">
+      <div class="dp-actions">
+        ${!p.done
+          ? `<button class="btn btn-success btn-xs" onclick="markDone(event,'${p.id}')">✅ Archivovat (vyřízeno)</button>`
+          : `<button class="btn btn-warn btn-xs" onclick="unarchive(event,'${p.id}')">↩ Obnovit</button>`}
+        <button class="btn btn-danger btn-xs" onclick="deleteProduct(event,'${p.id}')">🗑 Smazat</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── EXPAND ────────────────────────────────────────────────────────────────────
+function toggleExpand(id) {
+  expandedId = expandedId === id ? null : id;
+  renderTable();
+  if (expandedId) {
+    setTimeout(() => {
+      const el = document.getElementById('detail-'+id);
+      if (el) el.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }, 50);
+  }
+}
+
+// ── FIELD UPDATES ─────────────────────────────────────────────────────────────
+function updateField(id, field, value) {
+  const data = load();
+  const p = data.products.find(x => x.id === id);
+  if (!p) return;
+  p[field] = value;
+  save(data);
+  // re-render only the row dot (not full table to avoid losing focus)
+  const row = document.getElementById('row-'+id);
+  if (row) {
+    const dot = row.querySelector('.dot');
+    const st = getStatus(p);
+    dot.className = 'dot ' + (STATUS_DOT[st]||'dot-gray');
+    dot.title = STATUS_LABEL[st]||'';
+  }
+}
+
+// ── ENTRIES ───────────────────────────────────────────────────────────────────
+function addEntry(ev, id, type) {
+  ev.stopPropagation();
+  const prefix = type === 'dod' ? 'd' : 'b';
+  const dateEl = document.getElementById(prefix+'Date-'+id);
+  const qtyEl  = document.getElementById(prefix+'Qty-'+id);
+  const noteEl = document.getElementById(prefix+'Note-'+id);
+  const qty  = qtyEl.value ? parseInt(qtyEl.value) : null;
+  const note = noteEl.value.trim();
+  if (qty === null && !note) { alert('Zadejte množství nebo poznámku.'); return; }
+  const data = load();
+  const p = data.products.find(x => x.id === id);
+  const entry = { id: uid(), date: new Date(dateEl.value).toISOString(), qty, note };
+  if (type === 'dod') p.dodavky.push(entry);
+  else p.bonusyPrijate.push(entry);
+  save(data);
+  // update expandedId stays the same
+  renderTable();
+}
+
+function delEntry(ev, id, type, idx) {
+  ev.stopPropagation();
+  if (!confirm('Smazat tento záznam?')) return;
+  const data = load();
+  const p = data.products.find(x => x.id === id);
+  if (type === 'dod') p.dodavky.splice(idx, 1);
+  else p.bonusyPrijate.splice(idx, 1);
+  save(data);
+  renderTable();
+}
+
+// ── DONE / DELETE ──────────────────────────────────────────────────────────────
+function markDone(ev, id) {
+  ev.stopPropagation();
+  const data = load();
+  data.products.find(x => x.id === id).done = true;
+  save(data); expandedId = null; renderTable();
+}
+function unarchive(ev, id) {
+  ev.stopPropagation();
+  const data = load();
+  data.products.find(x => x.id === id).done = false;
+  save(data); renderTable();
+}
+function deleteProduct(ev, id) {
+  ev.stopPropagation();
+  if (!confirm('Trvale smazat tento produkt?')) return;
+  const data = load();
+  data.products = data.products.filter(x => x.id !== id);
+  save(data); expandedId = null; renderTable();
+}
+
+// ── NOVÝ PRODUKT ───────────────────────────────────────────────────────────────
+function openAddProduct() {
+  ['npName','npAkce','npOb','npBsl'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('modalProduct').classList.add('show');
+  setTimeout(() => document.getElementById('npName').focus(), 50);
+}
+function saveNewProduct() {
+  const name = document.getElementById('npName').value.trim();
+  if (!name) { alert('Zadejte název.'); return; }
+  const data = load();
+  data.products.push({
+    id: uid(), dealerId: activeDealerId, name,
+    akce: document.getElementById('npAkce').value.trim(),
+    objednano: document.getElementById('npOb').value.trim(),
+    bonusSlibeny: document.getElementById('npBsl').value.trim(),
+    bonusAdmin:'', notes:'', dodavky:[], bonusyPrijate:[], done:false
+  });
+  save(data);
+  closeModal('modalProduct');
+  renderTable();
+}
+
+// ── DEALER SELECTION SCREEN ───────────────────────────────────────────────────
+function showDealerScreen() {
+  activeDealerId = null;
+  expandedId = null;
+  document.getElementById('dealerScreen').style.display = 'block';
+  document.getElementById('tableView').style.display = 'none';
+  document.getElementById('btnBack').style.display = 'none';
+  document.getElementById('btnExport').style.display = 'none';
+  document.getElementById('btnAddProduct').style.display = 'none';
+  document.getElementById('dealerBadge').textContent = '';
+  renderDealerCards();
+}
+function renderDealerCards() {
+  const data = load();
+  const container = document.getElementById('dealerCards');
+  if (!data.dealers.length) {
+    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#9ca3af;font-size:.9rem">Žádní dealeři. Přidejte dealera přes ⚙ Dealeři.</div>';
+    return;
+  }
+  container.innerHTML = data.dealers.map(d => {
+    const count = data.products.filter(p => p.dealerId === d.id).length;
+    return `<div class="dealer-card" onclick="selectDealer('${d.id}')">
+      <div class="dc-name">${esc(d.name)}</div>
+      <div class="dc-count">${count} přípravků</div>
+    </div>`;
+  }).join('');
+}
+function selectDealer(id) {
+  activeDealerId = id;
+  expandedId = null;
+  document.getElementById('dealerScreen').style.display = 'none';
+  document.getElementById('tableView').style.display = 'block';
+  document.getElementById('btnBack').style.display = '';
+  document.getElementById('btnExport').style.display = '';
+  document.getElementById('btnAddProduct').style.display = '';
+  renderTable();
+}
+
+// ── DEALER SPRÁVA ─────────────────────────────────────────────────────────────
+function openDealerMgr() {
+  renderDealerList();
+  document.getElementById('newDealerName').value='';
+  document.getElementById('modalDealers').classList.add('show');
+}
+function renderDealerList() {
+  const {dealers} = load();
+  document.getElementById('dealerList').innerHTML = dealers.map(d =>
+    `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f3f4f6">
+      <span style="flex:1;font-weight:600">${esc(d.name)}</span>
+      <button class="btn btn-ghost btn-xs" onclick="selectDealerFromMgr('${d.id}')">Zobrazit</button>
+      <button class="btn btn-danger btn-xs" onclick="deleteDealer('${d.id}')">🗑</button>
+    </div>`
+  ).join('') || '<div style="color:#9ca3af;font-size:.82rem">Žádní dealeři</div>';
+}
+function addDealer() {
+  const name = document.getElementById('newDealerName').value.trim();
+  if (!name) return;
+  const data = load();
+  data.dealers.push({ id: uid(), name });
+  save(data);
+  document.getElementById('newDealerName').value='';
+  renderDealerList();
+}
+function deleteDealer(id) {
+  if (!confirm('Smazat dealera a všechny jeho produkty?')) return;
+  const data = load();
+  data.dealers = data.dealers.filter(d => d.id !== id);
+  data.products = data.products.filter(p => p.dealerId !== id);
+  save(data);
+  if (activeDealerId === id) activeDealerId = data.dealers[0]?.id || '';
+  renderDealerList();
+  renderTable();
+}
+function selectDealerFromMgr(id) {
+  closeModal('modalDealers');
+  selectDealer(id);
+}
+function openDealerSelector() {
+  const {dealers} = load();
+  document.getElementById('dealerSelectList').innerHTML = dealers.map(d =>
+    `<div style="padding:7px 0;border-bottom:1px solid #f3f4f6;cursor:pointer" onclick="closeModal('modalSelectDealer');selectDealer('${d.id}')">
+      <strong>${esc(d.name)}</strong>
+    </div>`
+  ).join('');
+  document.getElementById('modalSelectDealer').classList.add('show');
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function exportJSON() {
+  const data = load();
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'rabaty-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+}
+
+// ── KLÁVESY & KLIK MIMO ───────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') document.querySelectorAll('.overlay.show').forEach(m=>m.classList.remove('show'));
+});
+document.querySelectorAll('.overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target===ov) ov.classList.remove('show'); });
+});
+document.getElementById('npName').addEventListener('keydown', e => { if(e.key==='Enter') saveNewProduct(); });
+
+// ── START ──────────────────────────────────────────────────────────────────────
+showDealerScreen();
+</script>
+</body>
+</html>
