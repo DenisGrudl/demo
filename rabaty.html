@@ -57,34 +57,42 @@ td.td-akce{color:#4b5563;max-width:130px;font-size:.8rem}
 .dot-blue{background:#3b82f6}
 
 /* DETAIL PANEL */
-.detail-panel{padding:14px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:700px){.detail-panel{grid-template-columns:1fr}}
-
-.dp-section{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px}
-.dp-section.full{grid-column:1/-1}
-.dp-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6b7280;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.dp-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.dp-field label{display:block;font-size:.72rem;font-weight:600;color:#374151;margin-bottom:3px}
-.dp-field input,.dp-field textarea{width:100%;border:1px solid #d1d5db;border-radius:6px;padding:5px 8px;font-size:.82rem;font-family:inherit}
-.dp-field input:focus,.dp-field textarea:focus{outline:none;border-color:#2563eb}
-
-/* TIMESTAMPED ENTRIES */
-.entry-list{list-style:none;margin-bottom:6px}
-.entry-list li{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px dashed #f3f4f6;font-size:.82rem}
-.entry-list li:last-child{border:none}
-.e-date{color:#6b7280;font-size:.76rem;min-width:120px;flex-shrink:0}
-.e-qty{font-weight:700;color:#1d4ed8;min-width:50px}
-.e-note{color:#4b5563;flex:1;font-size:.78rem}
-.e-del{margin-left:auto;background:none;border:none;color:#d1d5db;cursor:pointer;padding:1px 4px;border-radius:3px;font-size:.9rem;line-height:1}
+.dp2{padding:10px 14px 12px}
+.dp2-header{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #e5e7eb}
+.dp2-header input{border:1px solid #d1d5db;border-radius:6px;padding:4px 8px;font-size:.82rem;font-family:inherit}
+.dp2-header input:focus{outline:none;border-color:#2563eb}
+.dp2-name{flex:2;min-width:140px}
+.dp2-akce{flex:1;min-width:90px}
+.dp2-note{flex:1;min-width:90px}
+.dp2-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.dp2-cols{grid-template-columns:1fr}}
+.dp2-col{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px}
+.dp2-col-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#6b7280;margin-bottom:8px}
+.dp2-summary{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.dp2-stat{font-size:.78rem;display:flex;align-items:center;gap:4px}
+.dp2-stat .s-label{color:#6b7280}
+.dp2-stat .s-val{font-weight:700;color:#374151}
+.dp2-stat input{border:1px solid #d1d5db;border-radius:4px;padding:2px 5px;font-size:.78rem;font-family:inherit;width:65px}
+.dp2-stat input:focus{outline:none;border-color:#2563eb}
+.dp2-remaining{font-size:.82rem;font-weight:700;margin-bottom:8px;padding:5px 10px;border-radius:6px;background:#eff6ff;color:#1d4ed8;text-align:center}
+.dp2-remaining.ok{background:#f0fdf4;color:#16a34a}
+.dp2-remaining.warn{background:#fff7ed;color:#d97706}
+.dp2-history{list-style:none;margin-bottom:8px;max-height:130px;overflow-y:auto}
+.dp2-history li{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px dashed #f3f4f6;font-size:.78rem}
+.dp2-history li:last-child{border:none}
+.h-date{color:#9ca3af;min-width:44px;flex-shrink:0;font-size:.72rem}
+.h-qty{font-weight:700;color:#1d4ed8;min-width:46px}
+.h-note{color:#6b7280;flex:1;font-size:.73rem}
+.e-del{margin-left:auto;background:none;border:none;color:#d1d5db;cursor:pointer;padding:1px 4px;border-radius:3px;font-size:.85rem;line-height:1}
 .e-del:hover{color:#ef4444;background:#fee2e2}
-
-.add-entry-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:4px}
-.add-entry-row input[type="datetime-local"]{border:1px solid #d1d5db;border-radius:5px;padding:4px 7px;font-size:.76rem;font-family:inherit}
-.add-entry-row input[type="number"],.add-entry-row input[type="text"]{border:1px solid #d1d5db;border-radius:5px;padding:4px 7px;font-size:.76rem;font-family:inherit;width:80px}
-.add-entry-row input[type="text"].note-input{width:120px}
-.add-entry-row input:focus{outline:none;border-color:#2563eb}
-
-.dp-actions{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end;padding-top:4px}
+.dp2-add{display:flex;gap:4px;align-items:center;flex-wrap:wrap;padding-top:6px;border-top:1px solid #f3f4f6}
+.dp2-add input{border:1px solid #d1d5db;border-radius:5px;padding:3px 6px;font-size:.75rem;font-family:inherit}
+.dp2-add input[type="date"]{width:110px}
+.dp2-add input[type="number"]{width:55px}
+.dp2-add input[type="text"]{width:80px}
+.dp2-add input:focus{outline:none;border-color:#2563eb}
+.dp2-footer{display:flex;gap:6px;align-items:center;padding-top:8px;margin-top:8px;border-top:1px solid #e5e7eb}
+.dp2-footer-left{margin-right:auto;display:flex;align-items:center;gap:4px;font-size:.78rem;color:#6b7280}
 
 /* TLAČÍTKA */
 .btn{padding:5px 13px;border-radius:6px;border:none;cursor:pointer;font-size:.78rem;font-weight:600;transition:all .15s;display:inline-flex;align-items:center;gap:4px;font-family:inherit}
@@ -526,98 +534,120 @@ function renderTable() {
 }
 
 // ── DETAIL PANEL ──────────────────────────────────────────────────────────────
+function shortDate(iso) {
+  if (!iso) return '—';
+  try { return new Date(iso).toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit'}); }
+  catch(e) { return '—'; }
+}
+function todayStr() { return new Date().toISOString().slice(0,10); }
+
 function renderDetailPanel(p) {
   const dodSum = sumEntries(p.dodavky);
   const bonSum = sumEntries(p.bonusyPrijate);
+  const ob  = parseFloat(p.objednano);
   const bsl = parseFloat(p.bonusSlibeny);
-  const dodCls = (dodSum !== null && p.objednano && !isNaN(parseFloat(p.objednano)) && dodSum >= parseFloat(p.objednano)) ? 't-ok' : '';
-  const bonCls = (!isNaN(bsl) && bonSum !== null) ? (bonSum >= bsl ? 't-ok' : 't-warn') : '';
 
-  const dodEntries = p.dodavky.map((e,i) => `
-    <li>
-      <span class="e-date">${e.imported ? '(import)' : fmtDate(e.date)}</span>
-      <span class="e-qty">${e.qty !== null ? e.qty+' ks' : ''}</span>
-      <span class="e-note">${esc(e.note||'')}</span>
-      <button class="e-del" onclick="delEntry(event,'${p.id}','dod',${i})" title="Smazat">✕</button>
-    </li>`).join('');
+  // Zbývá dodat
+  let dodRemHtml = '';
+  if (!isNaN(ob)) {
+    const zb = dodSum !== null ? ob - dodSum : ob;
+    dodRemHtml = zb <= 0
+      ? `<div class="dp2-remaining ok">✅ Vše doručeno</div>`
+      : `<div class="dp2-remaining">Zbývá dodat: <strong>${zb} ks</strong></div>`;
+  }
 
-  const bonEntries = p.bonusyPrijate.map((e,i) => `
-    <li>
-      <span class="e-date">${e.imported ? '(import)' : fmtDate(e.date)}</span>
-      <span class="e-qty">${e.qty !== null ? e.qty : ''}</span>
-      <span class="e-note">${esc(e.note||'')}</span>
-      <button class="e-del" onclick="delEntry(event,'${p.id}','bon',${i})" title="Smazat">✕</button>
-    </li>`).join('');
+  // Zbývá rabat
+  let bonRemHtml = '';
+  if (!isNaN(bsl)) {
+    const zb = bonSum !== null ? bsl - bonSum : bsl;
+    bonRemHtml = zb <= 0
+      ? `<div class="dp2-remaining ok">✅ Rabat vyrovnán</div>`
+      : `<div class="dp2-remaining warn">Zbývá rabat: <strong>${zb} ks</strong></div>`;
+  } else if (bonSum !== null && bonSum > 0) {
+    bonRemHtml = `<div class="dp2-remaining">Přijato celkem: <strong>${bonSum} ks</strong></div>`;
+  }
 
-  return `<div class="detail-panel">
+  // Řádek záznamu – nejnovější nahoře
+  function entryRow(e, origIdx, type) {
+    const d = e.imported ? 'import' : shortDate(e.date);
+    const q = e.qty !== null && e.qty !== undefined ? '+'+e.qty+' ks' : '';
+    return `<li>
+      <span class="h-date">${d}</span>
+      <span class="h-qty">${q}</span>
+      <span class="h-note">${esc(e.note||'')}</span>
+      <button class="e-del" onclick="delEntry(event,'${p.id}','${type}',${origIdx})" title="Smazat">✕</button>
+    </li>`;
+  }
 
-    <!-- ZÁKLADNÍ POLE -->
-    <div class="dp-section">
-      <div class="dp-title">Základní údaje</div>
-      <div class="dp-fields">
-        <div class="dp-field" style="grid-column:1/-1">
-          <label>Název produktu</label>
-          <input type="text" value="${esc(p.name)}" onchange="updateField('${p.id}','name',this.value)">
-        </div>
-        <div class="dp-field" style="grid-column:1/-1">
-          <label>AKCE (podmínky)</label>
-          <input type="text" value="${esc(p.akce||'')}" onchange="updateField('${p.id}','akce',this.value)" placeholder="např. 10+3">
-        </div>
-        <div class="dp-field">
-          <label>Objednal (ks)</label>
-          <input type="text" value="${esc(p.objednano||'')}" onchange="updateField('${p.id}','objednano',this.value)" placeholder="např. 50+15">
-        </div>
-        <div class="dp-field">
-          <label>Bonus slíbený</label>
-          <input type="text" value="${esc(p.bonusSlibeny||'')}" onchange="updateField('${p.id}','bonusSlibeny',this.value)" placeholder="např. 15">
-        </div>
-        <div class="dp-field">
-          <label>Bonus admin</label>
-          <input type="text" value="${esc(p.bonusAdmin||'')}" onchange="updateField('${p.id}','bonusAdmin',this.value)">
-        </div>
-        <div class="dp-field">
-          <label>Poznámky</label>
-          <input type="text" value="${esc(p.notes||'')}" onchange="updateField('${p.id}','notes',this.value)">
-        </div>
-      </div>
-      <div class="total-bar">
-        <div class="total-item"><span class="t-label">Dodáno celkem: </span><span class="t-val ${dodCls}">${dodSum !== null ? dodSum+' ks' : '—'}</span></div>
-        <div class="total-item"><span class="t-label">Bonus přijat: </span><span class="t-val ${bonCls}">${bonSum !== null ? bonSum : '—'}${!isNaN(bsl)?' / sl. '+bsl:''}</span></div>
-      </div>
+  const dodRows = p.dodavky.length
+    ? [...p.dodavky].map((e,i)=>({e,i})).reverse().map(({e,i})=>entryRow(e,i,'dod')).join('')
+    : '<li style="color:#9ca3af;font-size:.75rem;padding:4px 0">Zatím nic nedorazilo</li>';
+
+  const bonRows = p.bonusyPrijate.length
+    ? [...p.bonusyPrijate].map((e,i)=>({e,i})).reverse().map(({e,i})=>entryRow(e,i,'bon')).join('')
+    : '<li style="color:#9ca3af;font-size:.75rem;padding:4px 0">Zatím žádný rabat</li>';
+
+  return `<div class="dp2">
+
+    <!-- HLAVIČKA -->
+    <div class="dp2-header">
+      <input class="dp2-name" type="text" value="${esc(p.name)}" onchange="updateField('${p.id}','name',this.value)" placeholder="Název produktu">
+      <input class="dp2-akce" type="text" value="${esc(p.akce||'')}" onchange="updateField('${p.id}','akce',this.value)" placeholder="AKCE (např. 10+3)">
+      <input class="dp2-note" type="text" value="${esc(p.notes||'')}" onchange="updateField('${p.id}','notes',this.value)" placeholder="Poznámka…">
     </div>
 
-    <!-- DODÁVKY -->
-    <div class="dp-section">
-      <div class="dp-title">📦 Simply dodalo <span style="font-weight:400;color:#6b7280">(${p.dodavky.length} zázn.)</span></div>
-      <ul class="entry-list">${dodEntries || '<li style="color:#9ca3af;font-size:.78rem;padding:4px 0">Zatím žádný záznam</li>'}</ul>
-      <div class="add-entry-row">
-        <input type="datetime-local" id="dDate-${p.id}" value="${nowLocal()}">
-        <input type="number" id="dQty-${p.id}" placeholder="ks" min="1">
-        <input type="text" class="note-input" id="dNote-${p.id}" placeholder="poznámka">
-        <button class="btn btn-ghost btn-xs" onclick="addEntry(event,'${p.id}','dod')">+ Přidat</button>
+    <!-- DVA SLOUPCE -->
+    <div class="dp2-cols">
+
+      <!-- DODÁVKY -->
+      <div class="dp2-col">
+        <div class="dp2-col-title">📦 Dodávky</div>
+        <div class="dp2-summary">
+          <div class="dp2-stat"><span class="s-label">Objednáno:</span>
+            <input type="text" value="${esc(p.objednano||'')}" onchange="updateField('${p.id}','objednano',this.value)" placeholder="ks">
+          </div>
+          <div class="dp2-stat"><span class="s-label">Přijato:</span><span class="s-val">${dodSum !== null ? dodSum+' ks' : '—'}</span></div>
+        </div>
+        ${dodRemHtml}
+        <ul class="dp2-history">${dodRows}</ul>
+        <div class="dp2-add">
+          <input type="date" id="dDate-${p.id}" value="${todayStr()}">
+          <input type="number" id="dQty-${p.id}" placeholder="ks" min="1">
+          <input type="text" id="dNote-${p.id}" placeholder="poznámka">
+          <button class="btn btn-ghost btn-xs" onclick="addEntry(event,'${p.id}','dod')">+ Přidat</button>
+        </div>
       </div>
+
+      <!-- RABAT -->
+      <div class="dp2-col">
+        <div class="dp2-col-title">🎁 Rabat</div>
+        <div class="dp2-summary">
+          <div class="dp2-stat"><span class="s-label">Slíbeno:</span>
+            <input type="text" value="${esc(p.bonusSlibeny||'')}" onchange="updateField('${p.id}','bonusSlibeny',this.value)" placeholder="ks">
+          </div>
+          <div class="dp2-stat"><span class="s-label">Přijato:</span><span class="s-val">${bonSum !== null ? bonSum+' ks' : '—'}</span></div>
+        </div>
+        ${bonRemHtml}
+        <ul class="dp2-history">${bonRows}</ul>
+        <div class="dp2-add">
+          <input type="date" id="bDate-${p.id}" value="${todayStr()}">
+          <input type="number" id="bQty-${p.id}" placeholder="ks" min="1">
+          <input type="text" id="bNote-${p.id}" placeholder="poznámka">
+          <button class="btn btn-ghost btn-xs" onclick="addEntry(event,'${p.id}','bon')">+ Přidat</button>
+        </div>
+      </div>
+
     </div>
 
-    <!-- BONUSY -->
-    <div class="dp-section">
-      <div class="dp-title">🎁 Bonus přijatý <span style="font-weight:400;color:#6b7280">(${p.bonusyPrijate.length} zázn.)</span></div>
-      <ul class="entry-list">${bonEntries || '<li style="color:#9ca3af;font-size:.78rem;padding:4px 0">Zatím žádný záznam</li>'}</ul>
-      <div class="add-entry-row">
-        <input type="datetime-local" id="bDate-${p.id}" value="${nowLocal()}">
-        <input type="number" id="bQty-${p.id}" placeholder="množství" min="1">
-        <input type="text" class="note-input" id="bNote-${p.id}" placeholder="poznámka">
-        <button class="btn btn-ghost btn-xs" onclick="addEntry(event,'${p.id}','bon')">+ Přidat</button>
+    <!-- PATIČKA -->
+    <div class="dp2-footer">
+      <div class="dp2-footer-left">
+        Admin: <input type="text" value="${esc(p.bonusAdmin||'')}" onchange="updateField('${p.id}','bonusAdmin',this.value)" placeholder="—" style="width:70px;border:1px solid #d1d5db;border-radius:4px;padding:2px 5px;font-size:.78rem;font-family:inherit">
       </div>
-    </div>
-
-    <!-- AKCE -->
-    <div class="dp-section full" style="background:transparent;border:none;padding:0">
-      <div class="dp-actions">
-        ${!p.done
-          ? `<button class="btn btn-success btn-xs" onclick="markDone(event,'${p.id}')">✅ Archivovat (vyřízeno)</button>`
-          : `<button class="btn btn-warn btn-xs" onclick="unarchive(event,'${p.id}')">↩ Obnovit</button>`}
-        <button class="btn btn-danger btn-xs" onclick="deleteProduct(event,'${p.id}')">🗑 Smazat</button>
-      </div>
+      ${!p.done
+        ? `<button class="btn btn-success btn-xs" onclick="markDone(event,'${p.id}')">✅ Archivovat</button>`
+        : `<button class="btn btn-warn btn-xs" onclick="unarchive(event,'${p.id}')">↩ Obnovit</button>`}
+      <button class="btn btn-danger btn-xs" onclick="deleteProduct(event,'${p.id}')">🗑 Smazat</button>
     </div>
   </div>`;
 }
@@ -663,7 +693,8 @@ function addEntry(ev, id, type) {
   if (qty === null && !note) { alert('Zadejte množství nebo poznámku.'); return; }
   const data = load();
   const p = data.products.find(x => x.id === id);
-  const entry = { id: uid(), date: new Date(dateEl.value).toISOString(), qty, note };
+  const dateISO = dateEl.value ? new Date(dateEl.value + 'T12:00:00').toISOString() : new Date().toISOString();
+  const entry = { id: uid(), date: dateISO, qty, note };
   if (type === 'dod') p.dodavky.push(entry);
   else p.bonusyPrijate.push(entry);
   save(data);
