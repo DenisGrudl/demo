@@ -9,13 +9,13 @@
 body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1f2937;font-size:13px}
 
 /* HEADER */
-header{background:#1a3a5c;color:#fff;height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 2px 6px rgba(0,0,0,.25);position:sticky;top:0;z-index:50}
+header{background:#1a3a5c;color:#fff;min-height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;box-shadow:0 2px 6px rgba(0,0,0,.25);position:sticky;top:0;z-index:50;flex-wrap:wrap;gap:6px}
 header h1{font-size:1rem;letter-spacing:.3px}
-.hdr-right{display:flex;gap:8px;align-items:center}
+.hdr-right{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 
 /* TOOLBAR */
 .toolbar{display:flex;gap:8px;align-items:center;padding:10px 16px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:50px;z-index:40;flex-wrap:wrap}
-.search-box{border:1px solid #d1d5db;border-radius:7px;padding:5px 10px;font-size:.82rem;width:220px;font-family:inherit}
+.search-box{border:1px solid #d1d5db;border-radius:7px;padding:5px 10px;font-size:.82rem;width:220px;max-width:100%;font-family:inherit}
 .search-box:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 2px #bfdbfe}
 .filter-group{display:flex;gap:4px}
 .filter-btn{padding:5px 12px;border:1px solid #d1d5db;border-radius:7px;background:#fff;cursor:pointer;font-size:.78rem;font-weight:600;color:#6b7280;transition:all .15s}
@@ -123,6 +123,23 @@ td.td-akce{color:#4b5563;max-width:130px;font-size:.8rem}
 .total-item{font-size:.78rem}.total-item .t-label{color:#6b7280}.total-item .t-val{font-weight:700;color:#1d4ed8}
 .t-ok{color:#16a34a!important}.t-warn{color:#d97706!important}.t-bad{color:#dc2626!important}
 .dealer-badge{background:#dbeafe;color:#1d4ed8;padding:2px 9px;border-radius:10px;font-size:.75rem;font-weight:700}
+
+/* MOBILNÍ RESPONZIVITA */
+@media(max-width:650px){
+  /* Schovat sloupce: Objednal, Bonus sl., Bonus dod., Admin */
+  thead th:nth-child(4),thead th:nth-child(6),thead th:nth-child(7),thead th:nth-child(8),
+  tbody td:nth-child(4),tbody td:nth-child(6),tbody td:nth-child(7),tbody td:nth-child(8){display:none}
+  table{min-width:0}
+  .toolbar{padding:8px 10px}
+  .search-box{width:100%}
+  .filter-group{flex-wrap:wrap}
+  thead{top:auto;position:static}
+}
+@media(max-width:420px){
+  /* Schovat i AKCE sloupec na velmi malých displejích */
+  thead th:nth-child(3),tbody td:nth-child(3){display:none}
+  header h1 .dealer-badge{display:none}
+}
 
 /* DEALER SELECTION SCREEN */
 #dealerScreen{padding:48px 16px;display:none}
